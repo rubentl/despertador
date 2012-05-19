@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 '''Básicamente se trata de despertar el ordenador a una hora y que suene
-tu música favorita, usando el programa rtcwake y mplayer'''
+tu música favorita, usando el programa rtcwake y smplayer'''
 
 import tkinter.ttk as ttk
 import tkinter as tk
@@ -16,13 +16,17 @@ import re
 re_str = r"""^(?:(?P<d>[0-9]+)d){0,1}(?:(?P<h>[0-2]*
               [0-9])h){0,1}(?:(?P<m>[0-5]*[0-9])m){0,1}$"""
 
+rtcwake = 'gksudo "rtcwake -m mem -s {0}";'
+reproductor = 'smplayer {0}'
+
 
 def vp_start_gui():
     global val, w, root
     root = tk.Tk()
     root.title('Despertador')
     root.geometry('474x163+230+129')
-    plastik_theme.install('tile-themes/plastik/plastik')  #cargar el tema visual
+    # cargar el tema visual
+    plastik_theme.install('tile-themes/plastik/plastik')
     set_Tk_var()
     w = Despertador(root)
     init()
@@ -33,8 +37,9 @@ def set_Tk_var():
     global combobox, comandos, entry
     combobox = tk.StringVar()
     entry = tk.StringVar()
-    comandos = ()  #se pueden poner archivos de música predeterminados 
-    #combobox.set(comandos[0])  #descomentar esta línea si comandos != ()
+    # se pueden poner archivos de música predeterminados
+    comandos = ()
+    # combobox.set(comandos[0])  #descomentar esta línea si comandos != ()
 
 
 def init():
@@ -62,8 +67,8 @@ def aceptar():
         if (m != None):
             m = int(m) * 60
             segundos_totales += m
-        os.system('gksudo "rtcwake -m mem -s %s"; mplayer %s' %
-                (segundos_totales, comando))
+        os.system(''.join((rtcwake.format(segundos_totales),
+            reproductor.format(comando))))
         root.quit()
     else:
         ayuda()
@@ -71,7 +76,8 @@ def aceptar():
 
 def archivo():
     d = FileDialog(root)
-    fname = d.go(dir_or_file='/home/ruben/Música') #directorio inicial de la música
+    # directorio inicial de la música
+    fname = d.go(dir_or_file='/home/ruben/Música')
     if fname is None:
         return
     else:
