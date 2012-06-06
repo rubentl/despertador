@@ -1,6 +1,6 @@
-=====
+===========
 Despertador
-=====
+===========
 Este pequeño programa permite despertar el ordenador a una hora dada
 con una música seleccionada.
 Uso el programa de gnu/linux *rtcwake* y *smplayer*.
