@@ -1,4 +1,3 @@
-===========
 Despertador
 ===========
 Este pequeño programa permite despertar el ordenador a una hora dada
@@ -11,4 +10,5 @@ Usa la librería *Tk* y *python3*.
 TODO: 
 -----
 En vez de pasar un intervalo de tiempo, poner una hora a la que despertarse.
-Como opción, permitir especificar una hora a la que suspender el ordenador.
+Como opción, permitir especificar una hora a la que suspender el ordenador o
+poner un botón en el escritorio para suspender el ordenador.
