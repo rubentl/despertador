@@ -12,6 +12,7 @@ import plastik_theme
 import os
 import re
 import datetime as dt
+from lenguaje import _
 
 # Expresión regular para 1d5h23m.
 re_str = r"""^(?:(?P<d>[0-9]+)d){0,1}(?:(?P<h>[0-2]*[0-9])h){0,1}(?:(?P<m>[0-5]*[0-9])m){0,1}$"""
@@ -34,7 +35,7 @@ class Despertador:
 
         self.tLa34 = ttk.Labelframe(master)
         self.tLa34.place(relx=0.06, rely=0.06, relheight=0.4, relwidth=0.66)
-        self.tLa34.configure(text="Tiempo")
+        self.tLa34.configure(text=_("Tiempo"))
         self.tLa34.configure(width="315")
         self.tLa34.configure(height="65")
 
@@ -48,7 +49,7 @@ class Despertador:
 
         self.tLa36 = ttk.Labelframe(master)
         self.tLa36.place(relx=0.06, rely=0.49, relheight=0.4, relwidth=0.91)
-        self.tLa36.configure(text="Archivo a reproducir")
+        self.tLa36.configure(text=_("Archivo a reproducir"))
         self.ButFile = ttk.Button(self.tLa36)
         self.ButFile.place(relx=0.82, rely=0.32, relheight=0.5, relwidth=0.15)
         self.ButFile.configure(takefocus="")
@@ -68,20 +69,20 @@ class Despertador:
         self.tBu38.place(relx=0.78, rely=0.1)
         self.tBu38.configure(takefocus="")
         self.tBu38.configure(command=self.aceptar)
-        self.tBu38.configure(text="Aceptar")
+        self.tBu38.configure(text=_("Aceptar"))
 
         self.cpd39 = ttk.Button(master)
         self.cpd39.place(relx=0.78, rely=0.3)
         self.cpd39.configure(takefocus="")
         self.cpd39.configure(command=self.cancelar)
-        self.cpd39.configure(text="Cancelar")
+        self.cpd39.configure(text=_("Cancelar"))
 
     def cancelar(self):
         root.quit()
 
     def aceptar(self):
         def ayuda():
-            entry.set('ejemplo de uso: 1d5h23m o 14:45 12/02/2013')
+            entry.set(_('ejemplo de uso: 1d5h23m o 14:45 12/02/2013'))
         hora = entry.get()
         segundos = None
         if (hora != ''):
@@ -139,7 +140,7 @@ class Despertador:
             ayuda()
         if (segundos is not None):
             if (segundos.total_seconds() < 0):
-                entry.set('La hora solicitada está pasada.')
+                entry.set(_('La hora solicitada está pasada.'))
             else:
                 os.system(''.join((rtcwake.format(segundos.total_seconds()),
                                    reproductor.format(comando))))
@@ -161,7 +162,7 @@ class Despertador:
 if __name__ == '__main__':
     global val, w, root
     root = tk.Tk()
-    root.title('Despertador')
+    root.title(_('Despertador'))
     root.geometry('474x163+230+129')
     # cargar el tema visual
     plastik_theme.install('tile-themes/plastik/plastik')

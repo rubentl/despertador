@@ -1,0 +1,46 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-01-20 18:14+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: despertador.py:38
+msgid "Tiempo"
+msgstr ""
+
+#: despertador.py:52
+msgid "Archivo a reproducir"
+msgstr ""
+
+#: despertador.py:72
+msgid "Aceptar"
+msgstr ""
+
+#: despertador.py:78
+msgid "Cancelar"
+msgstr ""
+
+#: despertador.py:85
+msgid "ejemplo de uso: 1d5h23m o 14:45 12/02/2013"
+msgstr ""
+
+#: despertador.py:143
+msgid "La hora solicitada está pasada."
+msgstr ""
+
+#: despertador.py:165
+msgid "Despertador"
+msgstr ""
