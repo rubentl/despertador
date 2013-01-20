@@ -11,10 +11,13 @@ import plastik_theme
 # import sys
 import os
 import re
+import datetime as dt
 
-# Expresión regular para analizar la entrada del usuario y obtener sus datos.
-re_str = r"""^(?:(?P<d>[0-9]+)d){0,1}(?:(?P<h>[0-2]*
-              [0-9])h){0,1}(?:(?P<m>[0-5]*[0-9])m){0,1}$"""
+# Expresión regular para 1d5h23m.
+re_str = r"""^(?:(?P<d>[0-9]+)d){0,1}(?:(?P<h>[0-2]*[0-9])h){0,1}(?:(?P<m>[0-5]*[0-9])m){0,1}$"""
+
+# Expresión regular para hora y fecha: 22:45 19/01/2013
+re_str_hora = r"""^(?:(?P<h>[0-2]*[0-9]):?)(?:(?P<m>[0-5]*[0-9])?) +(?:(?P<dia>[0-3]*[0-9]):?)[/,-](?:(?P<mes>[0-1]*[0-2]):?)[/,-](?:(?P<ano>20[1-9][0-9]):?)$"""
 
 rtcwake = 'gksudo "rtcwake -m mem -s {0}";'
 reproductor = 'smplayer {0}'
@@ -78,34 +81,69 @@ class Despertador:
 
     def aceptar(self):
         def ayuda():
-            entry.set('ejemplo de uso: 1d5h23m')
+            entry.set('ejemplo de uso: 1d5h23m o 14:45 12/02/2013')
         hora = entry.get()
-        print(hora)
+        segundos = None
         if (hora != ''):
             comando = combobox.get()
             match_obj = re.search(re_str, hora)
-            segundos_totales = 0
-            if (match_obj is not None):
+            if (match_obj is not None):  # un intervalo
                 d = match_obj.group('d')  # día
                 h = match_obj.group('h')  # hora
                 m = match_obj.group('m')  # minuto
-                # convierto en números
                 if (d is not None):
-                    d = int(d) * 60 * 60 * 24
-                    segundos_totales = d
+                    d = int(d)
+                else:
+                    d = 0
                 if (h is not None):
-                    h = int(h) * 60 * 60
-                    segundos_totales += h
+                    h = int(h)
+                else:
+                    h = 0
                 if (m is not None):
-                    m = int(m) * 60
-                    segundos_totales += m
-                os.system(''.join((rtcwake.format(segundos_totales),
-                                   reproductor.format(comando))))
-                root.quit()
+                    m = int(m)
+                else:
+                    m = 0
+                segundos = dt.timedelta(days=d, hours=h, minutes=m)
             else:
-                ayuda()
+                match_obj = re.search(re_str_hora, hora)
+                if (match_obj is not None):  # a una hora concreta
+                    h = match_obj.group('h')  # hora
+                    m = match_obj.group('m')  # minuto
+                    dia = match_obj.group('dia')
+                    mes = match_obj.group('mes')
+                    ano = match_obj.group('ano')
+                    if (h is not None):
+                        h = int(h)
+                    else:
+                        h = 0
+                    if (m is not None):
+                        m = int(m)
+                    else:
+                        m = 0
+                    if (dia is not None):
+                        dia = int(dia)
+                    else:
+                        dia = 0
+                    if (mes is not None):
+                        mes = int(mes)
+                    else:
+                        mes = 0
+                    if (ano is not None):
+                        ano = int(ano)
+                    else:
+                        ano = 0
+                    segundos = dt.datetime(ano, mes, dia, h, m) - dt.datetime.now()
+                else:
+                    ayuda()
         else:
             ayuda()
+        if (segundos is not None):
+            if (segundos.total_seconds() < 0):
+                entry.set('La hora solicitada está pasada.')
+            else:
+                os.system(''.join((rtcwake.format(segundos.total_seconds()),
+                                   reproductor.format(comando))))
+                root.quit()
 
     def archivo(self):
         d = FileDialog(root)

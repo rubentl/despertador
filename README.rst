@@ -11,6 +11,7 @@ Usa la librería *Tk* y *python3*.
 ####
 TODO 
 ####
-En vez de pasar un intervalo de tiempo, poner una hora a la que despertarse.
-Como opción, permitir especificar una hora a la que suspender el ordenador o
-poner un botón en el escritorio para suspender el ordenador.
+ * DONE 2013-01-20 En vez de pasar un intervalo de tiempo, poner una hora a la que despertarse.
+ * TODO Como opción, permitir especificar una hora a la que suspender el ordenador o
+   poner un botón en el escritorio para suspender el ordenador.
+ * TODO Internalización
