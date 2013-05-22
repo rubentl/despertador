@@ -25,11 +25,13 @@ reproductor = 'smplayer {0}'
 
 
 class Despertador:
+
     def __init__(self, master=None):
         style = ttk.Style()
         theme = style.theme_use()
         default = style.lookup(theme, 'background')
         master.configure(background=default)
+        master.resizable(width=False, height=False)
         master.bind('<Escape>', master.quit)
         master.protocol('WM_DELETE_WINDOW', master.quit)
 
@@ -133,7 +135,8 @@ class Despertador:
                         ano = int(ano)
                     else:
                         ano = 0
-                    segundos = dt.datetime(ano, mes, dia, h, m) - dt.datetime.now()
+                    segundos = dt.datetime(
+                        ano, mes, dia, h, m) - dt.datetime.now()
                 else:
                     ayuda()
         else:
