@@ -15,27 +15,39 @@ import datetime as dt
 from lenguaje import _
 
 # Expresión regular para 1d5h23m.
-re_str = r"""^(?:(?P<d>[0-9]+)d){0,1}(?:(?P<h>[0-2]*[0-9])h){0,1}(?:(?P<m>[0-5]*[0-9])m){0,1}$"""
+re_intervalo = r"""(?:(?P<d>[0-9]+)d){0,1}(?:(?P<h>[0-2]*[0-9])h){0,1}(?:(?P<m>[0-5]*[0-9])m){0,1}"""
 
 # Expresión regular para hora y fecha: 22:45 19/01/2013
-re_str_hora = r"""^(?:(?P<h>[0-2]*[0-9]):?)(?:(?P<m>[0-5]*[0-9])?) +(?:(?P<dia>[0-3]*[0-9]):?)[/,-](?:(?P<mes>[0-1]*[0-2]):?)[/,-](?:(?P<ano>20[1-9][0-9]):?)$"""
+re_hora_dia = r"""(?P<hora>([01][0-9]|2[0-3])):(?P<minuto>[0-5][0-9]) +(?P<dia>(0[1-9]|[12][0-9]|3[01]))(/|-)(?P<mes>(0[1-9]|1[12]))(/|-)(?P<anio>[12][0-9]{3})"""
 
-rtcwake = 'gksudo "rtcwake -m mem -s {0}";'
-reproductor = 'smplayer {0}'
+rtcwake = 'gksudo "rtcwake -m mem -s {0}"'
+reproductor = 'mplayer {0}'
+
+# Pon aquí tu música predeterminada
+comandos = ('mastillo.mp3', 'colimbo,mp3')
 
 
 class Despertador:
 
-    def __init__(self, master=None):
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title(_('Despertador'))
+        self.root.geometry('474x163+230+129')
+        # cargar el tema visual
+        plastik_theme.install('tile-themes/plastik/plastik')
         style = ttk.Style()
         theme = style.theme_use()
         default = style.lookup(theme, 'background')
-        master.configure(background=default)
-        master.resizable(width=False, height=False)
-        master.bind('<Escape>', master.quit)
-        master.protocol('WM_DELETE_WINDOW', master.quit)
+        self.root.configure(background=default)
+        self.root.resizable(width=False, height=False)
+        self.root.bind('<Escape>', self.root.quit)
+        self.root.protocol('WM_DELETE_WINDOW', self.root.quit)
+        self.combobox = tk.StringVar()
+        self.combobox.set(comandos[0])
+        self.entry = tk.StringVar()
+        self.ayuda()
 
-        self.tLa34 = ttk.Labelframe(master)
+        self.tLa34 = ttk.Labelframe(self.root)
         self.tLa34.place(relx=0.06, rely=0.06, relheight=0.4, relwidth=0.66)
         self.tLa34.configure(text=_("Tiempo"))
         self.tLa34.configure(width="315")
@@ -45,13 +57,14 @@ class Despertador:
         self.hora.place(relx=0.16, rely=0.36, relheight=0.42, relwidth=0.68)
 
         self.hora.configure(takefocus="")
-        self.hora.configure(textvariable=entry)
+        self.hora.configure(textvariable=self.entry)
         self.hora.configure(width="214")
         self.hora.configure(cursor="xterm")
 
-        self.tLa36 = ttk.Labelframe(master)
+        self.tLa36 = ttk.Labelframe(self.root)
         self.tLa36.place(relx=0.06, rely=0.49, relheight=0.4, relwidth=0.91)
         self.tLa36.configure(text=_("Archivo a reproducir"))
+
         self.ButFile = ttk.Button(self.tLa36)
         self.ButFile.place(relx=0.82, rely=0.32, relheight=0.5, relwidth=0.15)
         self.ButFile.configure(takefocus="")
@@ -60,120 +73,88 @@ class Despertador:
 
         self.comando = ttk.Combobox(self.tLa36)
         self.comando.place(relx=0.05, rely=0.36, relheight=0.42, relwidth=0.7)
-
         self.comando.configure(height="19")
         self.comando.configure(takefocus="")
-        self.comando.configure(textvariable=combobox)
+        self.comando.configure(textvariable=self.combobox)
         self.comando.configure(values=comandos)
         self.comando.configure(width="217")
 
-        self.tBu38 = ttk.Button(master)
+        self.tBu38 = ttk.Button(self.root)
         self.tBu38.place(relx=0.78, rely=0.1)
         self.tBu38.configure(takefocus="")
         self.tBu38.configure(command=self.aceptar)
         self.tBu38.configure(text=_("Aceptar"))
 
-        self.cpd39 = ttk.Button(master)
+        self.cpd39 = ttk.Button(self.root)
         self.cpd39.place(relx=0.78, rely=0.3)
         self.cpd39.configure(takefocus="")
         self.cpd39.configure(command=self.cancelar)
         self.cpd39.configure(text=_("Cancelar"))
 
     def cancelar(self):
-        root.quit()
+        self.root.quit()
+
+    def ayuda(self):
+        self.entry.set(_('ejemplo: 1d5h23m ó 14:45 12/02/2013'))
 
     def aceptar(self):
-        def ayuda():
-            entry.set(_('ejemplo de uso: 1d5h23m o 14:45 12/02/2013'))
-        hora = entry.get()
         segundos = None
-        if (hora != ''):
-            comando = combobox.get()
-            match_obj = re.search(re_str, hora)
-            if (match_obj is not None):  # un intervalo
-                d = match_obj.group('d')  # día
-                h = match_obj.group('h')  # hora
-                m = match_obj.group('m')  # minuto
-                if (d is not None):
-                    d = int(d)
-                else:
-                    d = 0
-                if (h is not None):
-                    h = int(h)
-                else:
-                    h = 0
-                if (m is not None):
-                    m = int(m)
-                else:
-                    m = 0
-                segundos = dt.timedelta(days=d, hours=h, minutes=m)
+        if self.entry.get() != '':
+            match_interval = re.search(re_intervalo, self.entry.get())
+            dia = match_interval.group('d')  # día
+            hora = match_interval.group('h')  # hora
+            minuto = match_interval.group('m')  # minuto
+            dia = int(dia) if dia is not None else 0
+            hora = int(hora) if hora is not None else 0
+            minuto = int(minuto) if minuto is not None else 0
+            segundos = dt.timedelta(days=dia, hours=hora, minutes=minuto)
+            if segundos.total_seconds() != 0:
+                self.ejecutar(segundos)
+                return
             else:
-                match_obj = re.search(re_str_hora, hora)
-                if (match_obj is not None):  # a una hora concreta
-                    h = match_obj.group('h')  # hora
-                    m = match_obj.group('m')  # minuto
-                    dia = match_obj.group('dia')
-                    mes = match_obj.group('mes')
-                    ano = match_obj.group('ano')
-                    if (h is not None):
-                        h = int(h)
-                    else:
-                        h = 0
-                    if (m is not None):
-                        m = int(m)
-                    else:
-                        m = 0
-                    if (dia is not None):
-                        dia = int(dia)
-                    else:
-                        dia = 0
-                    if (mes is not None):
-                        mes = int(mes)
-                    else:
-                        mes = 0
-                    if (ano is not None):
-                        ano = int(ano)
-                    else:
-                        ano = 0
-                    segundos = dt.datetime(
-                        ano, mes, dia, h, m) - dt.datetime.now()
-                else:
-                    ayuda()
+                match_fecha = re.search(re_hora_dia, self.entry.get())
+                hora = match_fecha.group('hora')  # hora
+                minuto = match_fecha.group('minuto')  # minuto
+                dia = match_fecha.group('dia')
+                mes = match_fecha.group('mes')
+                anio = match_fecha.group('anio')
+                hora = int(hora) if hora is not None else 0
+                minuto = int(minuto) if minuto is not None else 0
+                dia = int(dia) if dia is not None else 0
+                mes = int(mes) if mes is not None else 0
+                anio = int(anio) if anio is not None else 0
+                segundos = dt.datetime(
+                    anio, mes, dia, hora, minuto) - dt.datetime.now()
+                self.ejecutar(segundos)
+                return
         else:
-            ayuda()
-        if (segundos is not None):
-            if (segundos.total_seconds() < 0):
-                entry.set(_('La hora solicitada está pasada.'))
+            self.ayuda()
+
+    def ejecutar(self, segundos):
+        if segundos is not None:
+            if segundos.total_seconds() < 0:
+                self.entry.set(_('La hora solicitada está pasada.'))
             else:
-                os.system(''.join((rtcwake.format(segundos.total_seconds()),
-                                   reproductor.format(comando))))
-                root.quit()
+                os.system(';'.join((rtcwake.format(segundos.seconds),
+                                   reproductor.format(self.combobox.get()))))
+                self.root.quit()
+        else:
+            self.ayuda()
 
     def archivo(self):
-        d = FileDialog(root)
+        dialogo = FileDialog(self.root)
         # directorio inicial de la música
-        fname = d.go(dir_or_file='/home/ruben/Música')
+        fname = dialogo.go(dir_or_file='/home/ruben/Música')
         if fname is None:
             return
         else:
-            lista = list(comandos)
+            lista = list(self.comando['values'])
             lista.append(fname)
-            w.comando['values'] = lista
-            combobox.set(fname)
+            self.comando['values'] = tuple(lista)
+            self.combobox.set(fname)
 
 
 if __name__ == '__main__':
-    global val, w, root
-    root = tk.Tk()
-    root.title(_('Despertador'))
-    root.geometry('474x163+230+129')
-    # cargar el tema visual
-    plastik_theme.install('tile-themes/plastik/plastik')
-    combobox = tk.StringVar()
-    entry = tk.StringVar()
-    # se pueden poner archivos de música predeterminados
-    comandos = ()
-    # combobox.set(comandos[0])  #descomentar esta línea si comandos != ()
-    w = Despertador(root)
-    w.hora.focus_set()
-    root.mainloop()
+    ventana = Despertador()
+    ventana.hora.focus_set()
+    ventana.root.mainloop()
