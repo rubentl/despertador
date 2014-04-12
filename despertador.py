@@ -24,7 +24,7 @@ rtcwake = 'gksudo "rtcwake -m mem -s {0}"'
 reproductor = 'mplayer {0}'
 
 # Pon aquí tu música predeterminada
-comandos = ('mastillo.mp3', 'colimbo,mp3')
+comandos = ('',)
 
 
 class Despertador:
